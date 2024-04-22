@@ -5,6 +5,8 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\UserInfo;
+use Illuminate\Support\Facades\DB;
 
 class DepositedCollectionController extends Controller
 {
@@ -13,7 +15,10 @@ class DepositedCollectionController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Admin/DepositedCollection');
+        $pending = UserInfo::select(['id','status',DB::raw("CONCAT(first_name,' ',last_name)  AS name")])->where('status', 'pending')->get();
+        return Inertia::render('Admin/DepositedCollection', [
+            'pending' => $pending
+        ]);
     }
 
     /**

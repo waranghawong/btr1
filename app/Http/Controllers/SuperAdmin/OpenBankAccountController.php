@@ -4,6 +4,8 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\UserInfo;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class OpenBankAccountController extends Controller
@@ -13,7 +15,10 @@ class OpenBankAccountController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Admin/OpenBankAccount');
+        $pending = UserInfo::select(['id','status',DB::raw("CONCAT(first_name,' ',last_name)  AS name")])->where('status', 'pending')->get();
+        return Inertia::render('Admin/OpenBankAccount', [
+            'pending' => $pending
+        ]);
     }
 
     /**
