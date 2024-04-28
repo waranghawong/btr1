@@ -11,4 +11,5 @@ class SuperAdminController extends Controller
     public function index(){
         return Inertia::render('Admin/Dashboard');
     }
+
 }

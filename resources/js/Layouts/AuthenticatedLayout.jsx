@@ -126,16 +126,17 @@ export default function Authenticated({ user, header, children }) {
             </div>
             </aside>
 
-            {header && (
-                <header className="">
-                    <div className="flex fixed bg-white top-0 left-40 right-0 justify-center mt-5 mx-auto p-4 sm:px-8 lg:px-8 ml-8">{header}</div>
-                </header>
-            )}
+           
             
             <div class="p-4 sm:ml-64">
                 <div class="rounded-lg dark:border-gray-700 ">
                     <div class="items-center justify-center rounded bg-gray-50 dark:bg-gray-800">
-                        
+
+                    {header && (
+                            <header className="">
+                                <div className="flex fixed  bg-white top-0 left-0 right-0  w-max-full justify-center mt-5 mx-auto p-4 sm:px-8 lg:px-8 ml-8">{header}</div>
+                            </header>
+                    )}
 
                         <main>{children}</main>
                     </div>

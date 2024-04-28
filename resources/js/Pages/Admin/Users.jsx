@@ -14,6 +14,7 @@ const columns = [
     'status',
 ] 
 const client_types = [
+    '',
     'NGA',
     'LGU',
     'GOCC'
@@ -23,9 +24,70 @@ const client_types = [
 
 export default function Users({ auth, active, inactive, pending }) {
 
+
+
+    
+    const [regionData, setRegion] = useState([]);
+    const [provinceData, setProvince] = useState([]);
+    const [cityData, setCity] = useState([]);
+    const [barangayData, setBarangay] = useState([]);
+
+    const [regionAddr, setRegionAddr] = useState("");
+    const [provinceAddr, setProvinceAddr] = useState("");
+    const [cityAddr, setCityAddr] = useState("");
+    const [barangayAddr, setBarangayAddr] = useState("");
+
+
+    const region = () => {
+        regions().then(response => {
+            setRegion(response);
+        });
+       
+    }
+   
+    const province = (e) => {
+        setRegionAddr(e.target.selectedOptions[0].text);
+     
+        provinces(e.target.value).then(response => {
+            setProvince(response);
+            setCity([]);    
+            //setBarangay([]);
+   
+           
+        });
+
+        setData("region", e.target.selectedOptions[0].text)
+      
+
+    }
+    
+    const city = (e) => {
+        setProvinceAddr(e.target.selectedOptions[0].text);
+        cities(e.target.value).then(response => {
+            setCity(response);
+        });
+
+        setData("province", e.target.selectedOptions[0].text)
+    }
+
+    const barangay = (e) => {
+        setCityAddr(e.target.selectedOptions[0].text);
+        barangays(e.target.value).then(response => {
+            setBarangay(response);
+        });
+        setData("city", e.target.selectedOptions[0].text)
+    }
+    
+
+
+    useEffect(() => {
+        region()
+        
+    }, [])
+
+
     const { data, setData , post, processing, errors, reset } = useForm({
         
-        defaultValues: {
         email : '',
         first_name: '',
         middle_name: '',
@@ -44,62 +106,9 @@ export default function Users({ auth, active, inactive, pending }) {
         date_filed: '',
         full_name_of_head_of_agency: '',
         designation_of_head_of_agency: '',
-        }
+      
 
     });
-
-    
-    const [regionData, setRegion] = useState([]);
-    const [provinceData, setProvince] = useState([]);
-    const [cityData, setCity] = useState([]);
-    const [barangayData, setBarangay] = useState([]);
-
-    const [regionAddr, setRegionAddr] = useState("");
-    const [provinceAddr, setProvinceAddr] = useState("");
-    const [cityAddr, setCityAddr] = useState("");
-    const [barangayAddr, setBarangayAddr] = useState("");
-
-
-    const region = () => {
-        regions().then(response => {
-            setRegion(response);
-        });
-    }
-   
-    const province = (e) => {
-        setRegionAddr(e.target.selectedOptions[0].text);
-     
-        provinces(e.target.value).then(response => {
-            setProvince(response);
-            setCity([]);    
-            //setBarangay([]);
-            setData(  "region", regionAddr   )
-        });
-
-    }
-
-    const city = (e) => {
-        setProvinceAddr(e.target.selectedOptions[0].text);
-        cities(e.target.value).then(response => {
-            setCity(response);
-        });
-    }
-
-    const barangay = (e) => {
-        setCityAddr(e.target.selectedOptions[0].text);
-        barangays(e.target.value).then(response => {
-            setBarangay(response);
-        });
-        console.log(cityAddr)
-    }
-    
-
-
-    useEffect(() => {
-        region()
-    }, [])
- 
-
   
 
 
@@ -158,7 +167,7 @@ export default function Users({ auth, active, inactive, pending }) {
                         </div>
                     </div>
                     <Modal show={isOpen} maxWidth={'3xl'} >
-                        <div class="sm:h-[calc(100%-3rem)] max-w-3xl my-6 mx-auto relative w-auto pointer-events-none">
+                        <div class="sm:h-[calc(100%-3rem)] h-full max-w-3xl my-6 mx-auto relative w-auto pointer-events-none">
                         <div class="max-h-full overflow-hidden border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
                         <div class="flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
                             <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalScrollableLabel"> User Enrollment Form </h5>
@@ -258,7 +267,7 @@ export default function Users({ auth, active, inactive, pending }) {
                                                         }
                                                 </select>
                                                 <span className="text-red">{regionAddr}</span>
-                                                {/* <input type="text" value={regionAddr} onChange={(e) => setData('region', e.target.value)}/> */}
+                                                <input type="hidden" value={data.region} onChange={(e) => setData({ ...data, region: e.target.value})}/>
                                                 <InputError className="mt-2" message={errors.region} />
                                             </div>
                                             <div class="mb-2">
@@ -273,7 +282,7 @@ export default function Users({ auth, active, inactive, pending }) {
                                                         }
                                                 </select>
                                                 <span className="text-red">{provinceAddr}</span>
-                                               {/* <input type="text" value={data.province} onChange={(e) => setData('province', e.target.value)}/> */}
+                                                <input type="hidden" value={data.province} onChange={(e) => setData({ ...data, province: e.target.value})}/>
                                                 <InputError className="mt-2" message={errors.province} />
                                             </div>
                                             <div class="mb-2">
@@ -288,7 +297,7 @@ export default function Users({ auth, active, inactive, pending }) {
                                                     }
                                                 </select>
                                                 <span className="text-red">{cityAddr}</span>
-                                                {/* <input type="text" value={data.city} onChange={(e) => setData('city', e.target.value)}/> */}
+                                                <input type="hidden" value={data.city} onChange={(e) => setData({ ...data, city: e.target.value})}/>
                                                 <InputError className="mt-2" message={errors.city} />
                                             </div>
 

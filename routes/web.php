@@ -39,7 +39,13 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth', 'role:superadmin'])->group(function () {
     Route::get('superadmin/dashboard', [SuperAdminController::class, 'index'])->name('superadmin.dashboard');
     Route::get('superadmin/users', [UsersController::class, 'index'])->name('superadmin.users');
+
     Route::get('superadmin/deposited_collections', [DepositedCollectionController::class, 'index'])->name('superadmin.deposited_collections');
+    Route::post('upload', [DepositedCollectionController::class, 'uploadFile'])->name('upload');
+    Route::get('deposited_collections/{id}', [DepositedCollectionController::class, 'edit'])->name('deposited_collections.edit');
+    Route::patch('deposited_collections/{id}', [DepositedCollectionController::class, 'update'])->name('deposited_collections.update');
+    Route::get('vewpdf/{id}', [DepositedCollectionController::class, 'showpdf'])->name('deposited_collections.vewpdf');
+
     Route::get('superadmin/mds_check', [MdsCheckController::class, 'index'])->name('superadmin.mds_check');
     Route::get('superadmin/change_of_depository', [ChangeofDepositoryController::class, 'index'])->name('superadmin.change_of_depository');
     Route::get('superadmin/opening_of_bank_account', [OpenBankAccountController::class, 'index'])->name('superadmin.opening_of_bank_account');

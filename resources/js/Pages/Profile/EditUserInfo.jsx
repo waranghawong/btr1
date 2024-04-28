@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import InputError from '@/Components/InputError';
-import { useState, useRef} from 'react';
+import { useState, useRef, useEffect} from 'react';
 import TextInput from '@/Components/TextInput';
 import DeleteModal from '@/Components/DeleteModal';
 import InputLabel from '@/Components/InputLabel';
@@ -22,8 +22,7 @@ export default function EditUser({ auth, userprofile, organization, user_locatio
 
     const {  delete: destroy, } = useForm({});
 
-    const [regionData, setRegion] = useState([]);
-
+    console.log(regions);
     const [confirmingUserDeletion, setConfirmingUserDeletion] = useState(false);
     
     const passwordInput = useRef();
@@ -33,6 +32,56 @@ export default function EditUser({ auth, userprofile, organization, user_locatio
     })
 
     const compare_pass = {"password" : "password"}
+
+    const [regionDatas, setRegion] = useState([]);
+    const [provinceData, setProvince] = useState([]);
+    const [cityData, setCity] = useState([]);
+    const [barangayData, setBarangay] = useState([]);
+
+    const [regionAddr, setRegionAddr] = useState("");
+    const [provinceAddr, setProvinceAddr] = useState("");
+    const [cityAddr, setCityAddr] = useState("");
+    const [barangayAddr, setBarangayAddr] = useState("");
+
+    const region = () => {
+        regions().then(response => {
+            setRegion(response);
+        });
+       
+    }
+   
+    const province = (e) => {
+        setRegionAddr(e.target.selectedOptions[0].text);
+     
+        provinces(e.target.value).then(response => {
+            setProvince(response);
+            setCity([]);    
+            //setBarangay([]);
+   
+           
+        });
+
+        setData("region", e.target.selectedOptions[0].text)
+      
+
+    }
+    
+    const city = (e) => {
+        setProvinceAddr(e.target.selectedOptions[0].text);
+        cities(e.target.value).then(response => {
+            setCity(response);
+        });
+
+        setData("province", e.target.selectedOptions[0].text)
+    }
+
+    const barangay = (e) => {
+        setCityAddr(e.target.selectedOptions[0].text);
+        barangays(e.target.value).then(response => {
+            setBarangay(response);
+        });
+        setData("city", e.target.selectedOptions[0].text)
+    }
     
 
  
@@ -115,6 +164,10 @@ export default function EditUser({ auth, userprofile, organization, user_locatio
           preserveScroll: true
       });
     }
+
+    useEffect(() => {
+        region()
+    }, [])
       
 
       
@@ -209,26 +262,51 @@ export default function EditUser({ auth, userprofile, organization, user_locatio
                                 <h2 className="text-lg font-medium text-gray-900">Location</h2>
                                 <br />
                                 <div class="mb-2">
-                                    <InputLabel htmlFor="region" value="Region" />
-                                    <select onChange={province} onSelect={region}>
-                                        <option disabled>Select Region</option>
-                                        {
-                                            regionData && regionData.length > 0 && regionData.map((item) => <option
-                                                key={item.region_code} value={item.region_code}>{item.region_name}</option>)
-                                        }
-                                    </select>
-                                    <InputError className="mt-2" message={errors.region} />
-                                </div>
-                                <div class="mb-2">
-                                    <InputLabel htmlFor="province" value="Province/District" />
-                                    <input type="text" id="province" value={data.province} onChange={(e) => setData('province', e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                    <InputError className="mt-2" message={errors.province} />
-                                </div>
-                                <div class="mb-2">
-                                    <InputLabel htmlFor="city" value="City/Municipality" />
-                                    <input type="text" id="city" value={data.city} onChange={(e) => setData('city', e.target.value)} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                    <InputError className="mt-2" message={errors.city} />
-                                </div>
+                                                <InputLabel htmlFor="region" value="Region" />
+                                                <select 
+                                                    onChange={ province } 
+                                                    onSelect={region} 
+                                                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
+                                                        <option disabled>Select Region</option>
+                                                        {
+                                                            regionDatas && regionDatas.length > 0 && regionDatas.map((item) => <option
+                                                                key={item.region_code} value={item.region_code}>{item.region_name}</option>)
+                                                        }
+                                                </select>
+                                                <span className="text-red">{regionAddr}</span>
+                                                <input type="hidden" value={data.region} onChange={(e) => setData({ ...data, region: e.target.value})}/>
+                                                <InputError className="mt-2" message={errors.region} />
+                                            </div>
+                                            <div class="mb-2">
+                                                <InputLabel htmlFor="province" value="Province/District" />
+                                                <select 
+                                                    onChange={city} 
+                                                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
+                                                        <option>Select Province</option>
+                                                        {
+                                                            provinceData && provinceData.length > 0 && provinceData.map((item) => <option
+                                                                key={item.province_code} value={item.province_code}>{item.province_name}</option>)
+                                                        }
+                                                </select>
+                                                <span className="text-red">{provinceAddr}</span>
+                                                <input type="hidden" value={data.province} onChange={(e) => setData({ ...data, province: e.target.value})}/>
+                                                <InputError className="mt-2" message={errors.province} />
+                                            </div>
+                                            <div class="mb-2">
+                                                <InputLabel htmlFor="city" value="City/Municipality" />
+                                                <select
+                                                    onChange={barangay} 
+                                                    className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'>
+                                                    <option>Select City</option>
+                                                    {
+                                                        cityData && cityData.length > 0 && cityData.map((item) => <option
+                                                            key={item.city_code} value={item.city_code}>{item.city_name}</option>)
+                                                    }
+                                                </select>
+                                                <span className="text-red">{cityAddr}</span>
+                                                <input type="hidden" value={data.city} onChange={(e) => setData({ ...data, city: e.target.value})}/>
+                                                <InputError className="mt-2" message={errors.city} />
+                                            </div>
 
                             </header>
                         </div>
